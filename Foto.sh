@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#VOu ter muito sucesso na programação
 pegarLINKS(){
     controle=3
     let i=QTY_RESULTS+3
