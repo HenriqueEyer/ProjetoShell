@@ -1,4 +1,5 @@
 #!/bin/bash
+#VOu ter muito sucesso na programação
 # Eu sou TRYBE e me perdi no meios dos branch que eu criei mas tudo em ordem agora
 
 
