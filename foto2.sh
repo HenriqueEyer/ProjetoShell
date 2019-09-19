@@ -1,16 +1,17 @@
 #!/bin/bash
-#(?:webformatURL)(?:":").*?"
+#'tURL":"https://pixabay.com/get/(\d+|\w+)+.\w{3}'"
 
-pegarLINKS(){
-    controle=3
-    let i=QTY_RESULTS+3
-    cont=1
-    while [ $controle -lt $i ]; do
-    url=`cut -d"{" -f$controle site.txt | cut -d'"' -f4`
-    echo $url
-    wget $url -o .jpg
-    let controle=controle+1
-    done
+Baixarfoto(){
+        echo "Entrando em $SEARCH_TERM"
+        curl -s -G -L --data-urlencode "key=$API_KEY" --data-urlencode "q=$SEARCH_TERM" --data-urlencode "image_type=photo" --data-urlencode "per_page=$QTY_RESULTS" https://pixabay.com/api  > site.txt
+        controle=`cut -d ":" -f2 site.txt | cut -d "," -f1`
+
+        if [ $controle -eq 0 ]
+        then  
+            echo "Nenhum item achado"
+        else
+            egrep -o 'tURL":"https://pixabay.com/get/(\d+|\w+)+.\w{3}' site.txt | cut -d '"' -f3 | xargs wget
+        fi
 }
 
 
@@ -18,24 +19,32 @@ API_KEY=13623998-877c27bd53b6ba11c01fc45d6
 
 SEARCH_TERM=$1
 QTY_RESULTS=$2
-if [ -z $QTY_RESULTS ]
+
+if [ -z $SEARCH_TERM ]
 then
-    echo 'Digite o quer procurar e o numero de imagem. Ex: "Dog" 5 '
+    echo 'Digite o quer procurar. Ex: "Dog" 5(numero de fotos) '
 else
+
+    case $QTY_RESULTS in
+        1)
+            QTY_RESULTS=3
+            ;;
+        2) 
+            QTY_RESULTS=3
+            ;;
+        *)
+            ;;
+    esac
+
     if [ -e $SEARCH_TERM ]
     then
         cd $SEARCH_TERM
-        echo "Entrando em $SEARCH_TERM"
-        curl -s -G -L --data-urlencode "key=$API_KEY" --data-urlencode "q=$SEARCH_TERM" --data-urlencode "image_type=photo" --data-urlencode "per_page=$QTY_RESULTS" https://pixabay.com/api  > lista.txt
-        #pegarLINKS
-        
+        Baixarfoto   
     else
         mkdir $SEARCH_TERM
         echo "Diretorio $SEARCH_TERM criado"
         cd $SEARCH_TERM
-        echo "Entrando em $SEARCH_TERM"
-        curl -s -G -L --data-urlencode "key=$API_KEY" --data-urlencode "q=$SEARCH_TERM" --data-urlencode "image_type=photo" --data-urlencode "per_page=$QTY_RESULTS" https://pixabay.com/api > site.txt
-        #pegarLINKS
+        Baixarfoto
     fi
 fi
 
