@@ -7,10 +7,14 @@ Baixarfoto(){
         controle=`cut -d ":" -f2 site.txt | cut -d "," -f1`
 
         if [ $controle -eq 0 ]
-        then  
+        then
+            rm site.txt
+            cd ..
+            rmdir $SEARCH_TERM 
             echo "Nenhum item achado"
         else
             egrep -o 'tURL":"https://pixabay.com/get/(\d+|\w+)+.\w{3}' site.txt | cut -d '"' -f3 | xargs wget
+            rm site.txt
         fi
 }
 
